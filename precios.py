@@ -97,26 +97,31 @@ def _linea_wa(item: dict) -> str:
     )
 
 
-def crear_mensaje_whatsapp(precios: dict) -> str:
+def crear_mensajes_whatsapp(precios: dict) -> list[str]:
     ts = datetime.now().strftime("%d/%m/%Y %H:%M")
-    lineas = [f"📊 *Precios — {ts}*", ""]
+    cabecera = f"📊 *Precios — {ts}*"
 
-    secciones = [
-        ("🇺🇸 *Acciones USA*",   precios["usa_acciones"]),
-        ("🇺🇸 *ETFs USA*",       precios["usa_etfs"]),
-        ("🇨🇱 *Acciones Chile*", precios["chile_acciones"]),
-        ("🇨🇱 *ETFs Chile*",     precios["chile_etfs"]),
-    ]
-    for titulo, items in secciones:
+    def bloque(titulo: str, items: list) -> str:
         if not items:
-            continue
-        lineas.append(titulo)
-        for item in items:
-            lineas.append(_linea_wa(item))
-        lineas.append("")
+            return ""
+        lineas = [titulo] + [_linea_wa(i) for i in items]
+        return "\n".join(lineas)
 
-    lineas.append("_Actualizado automáticamente_")
-    return "\n".join(lineas)
+    msg_usa = "\n\n".join(filter(None, [
+        cabecera,
+        bloque("🇺🇸 *Acciones USA*", precios["usa_acciones"]),
+        bloque("🇺🇸 *ETFs USA*",     precios["usa_etfs"]),
+        "_Actualizado automáticamente_",
+    ]))
+
+    msg_chile = "\n\n".join(filter(None, [
+        cabecera,
+        bloque("🇨🇱 *Acciones Chile*", precios["chile_acciones"]),
+        bloque("🇨🇱 *ETFs Chile*",     precios["chile_etfs"]),
+        "_Actualizado automáticamente_",
+    ]))
+
+    return [msg_usa, msg_chile]
 
 
 def _fila_email(item: dict) -> str:
@@ -224,9 +229,10 @@ def main():
 
     api_key = os.environ.get("CALLMEBOT_API_KEY", "")
     if api_key:
-        mensaje = crear_mensaje_whatsapp(precios)
-        logging.info("Mensaje:\n%s", mensaje)
-        enviar_whatsapp(mensaje, cfg["whatsapp"]["phone"], api_key)
+        mensajes = crear_mensajes_whatsapp(precios)
+        for i, mensaje in enumerate(mensajes, 1):
+            logging.info("Mensaje %d/%d:\n%s", i, len(mensajes), mensaje)
+            enviar_whatsapp(mensaje, cfg["whatsapp"]["phone"], api_key)
     else:
         logging.warning("CALLMEBOT_API_KEY no configurada — WhatsApp omitido")
 
