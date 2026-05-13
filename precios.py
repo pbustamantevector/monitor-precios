@@ -3,6 +3,7 @@ import logging
 import argparse
 import smtplib
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -98,7 +99,7 @@ def _linea_wa(item: dict) -> str:
 
 
 def crear_mensajes_whatsapp(precios: dict) -> list[str]:
-    ts = datetime.now().strftime("%d/%m/%Y %H:%M")
+    ts = datetime.now(ZoneInfo("America/Santiago")).strftime("%d/%m/%Y %H:%M")
     cabecera = f"📊 *Precios — {ts}*"
 
     def bloque(titulo: str, items: list) -> str:
@@ -159,7 +160,7 @@ def _seccion_email(titulo: str, items: list) -> str:
 
 
 def crear_cuerpo_email(precios: dict) -> str:
-    ts = datetime.now().strftime("%d/%m/%Y %H:%M")
+    ts = datetime.now(ZoneInfo("America/Santiago")).strftime("%d/%m/%Y %H:%M")
     contenido = (
         _seccion_email("🇺🇸 Acciones USA",   precios["usa_acciones"])
         + _seccion_email("🇺🇸 ETFs USA",       precios["usa_etfs"])
@@ -241,7 +242,7 @@ def main():
         gmail_pass = os.environ.get("GMAIL_APP_PASSWORD", "")
         if gmail_user and gmail_pass:
             cfg["email"]["from_address"] = gmail_user
-            ts = datetime.now().strftime("%d/%m/%Y")
+            ts = datetime.now(ZoneInfo("America/Santiago")).strftime("%d/%m/%Y")
             enviar_email(
                 f"📊 Resumen Precios {ts}",
                 crear_cuerpo_email(precios),
