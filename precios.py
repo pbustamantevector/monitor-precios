@@ -78,10 +78,12 @@ def _emoji(cambio_pct: float) -> str:
     return "➡️"
 
 
-def _formatear_precio(precio: float, moneda: str) -> str:
+def _formatear_precio(precio: float, moneda: str, con_simbolo: bool = True) -> str:
     if moneda == "CLP":
-        return f"${precio:,.0f}".replace(",", ".")
-    return f"${precio:.2f}"
+        fmt = f"{precio:,.0f}".replace(",", ".")
+        return f"${fmt}" if con_simbolo else fmt
+    fmt = f"{precio:.2f}"
+    return f"${fmt}" if con_simbolo else fmt
 
 
 def _linea_wa(item: dict) -> str:
@@ -90,7 +92,7 @@ def _linea_wa(item: dict) -> str:
     signo = "+" if item["cambio_pct"] >= 0 else ""
     return (
         f"{_emoji(item['cambio_pct'])} {item['symbol']}  "
-        f"{_formatear_precio(item['precio'], item['moneda'])}  "
+        f"{_formatear_precio(item['precio'], item['moneda'], con_simbolo=False)}  "
         f"({signo}{item['cambio_pct']:.2f}%)"
     )
 
