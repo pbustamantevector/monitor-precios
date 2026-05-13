@@ -81,7 +81,7 @@ def _emoji(cambio_pct: float) -> str:
 
 def _formatear_precio(precio: float, moneda: str, con_simbolo: bool = True) -> str:
     if moneda == "CLP":
-        fmt = f"{precio:,.0f}".replace(",", ".")
+        fmt = f"{precio:,.2f}".replace(",", " ")
         return f"${fmt}" if con_simbolo else fmt
     fmt = f"{precio:.2f}"
     return f"${fmt}" if con_simbolo else fmt
