@@ -1,0 +1,44 @@
+ name: Monitor Precios
+
+  on:
+    schedule:
+      - cron: '0,30 13-19 * * 1-5'
+      - cron: '0 20 * * 1-5'
+    workflow_dispatch:
+      inputs:
+        modo:
+          description: 'Modo de ejecución'
+          required: false
+          default: 'reporte'
+          type: choice
+          options:
+            - reporte
+            - resumen-final
+
+  jobs:
+    monitor:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - uses: actions/setup-python@v5
+          with:
+            python-version: '3.11'
+            cache: 'pip'
+        - name: Instalar dependencias
+          run: pip install -r requirements.txt
+        - name: Determinar modo
+          id: modo
+          run: |
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              echo "modo=${{ github.event.inputs.modo }}" >> $GITHUB_OUTPUT
+            elif [ "$(date -u +%H)" = "20" ]; then
+              echo "modo=resumen-final" >> $GITHUB_OUTPUT
+            else
+              echo "modo=reporte" >> $GITHUB_OUTPUT
+            fi
+        - name: Ejecutar monitor
+          run: python precios.py --modo ${{ steps.modo.outputs.modo }}
+          env:
+            CALLMEBOT_API_KEY: ${{ secrets.CALLMEBOT_API_KEY }}
+            GMAIL_USER: ${{ secrets.GMAIL_USER }}
+            GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
