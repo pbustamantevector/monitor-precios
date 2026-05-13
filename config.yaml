@@ -1,0 +1,45 @@
+whatsapp:
+  phone: "+56995959596"
+
+email:
+  to: "bustamante.pablo@uc.cl"
+  from_address: ""  # se sobreescribe con GMAIL_USER en runtime
+
+stocks:
+  usa:
+    acciones:
+      - AAPL
+      - MSFT
+      - GOOGL
+      - AMZN
+      - TSLA
+      - NVDA
+      - NBIS
+      - AMD
+    etfs:
+      - SPY
+      - QQQ
+      - IWM
+  chile:
+    acciones:
+      - SQM-B
+      - COPEC
+      - CHILE
+      - FALABELLA
+      - CENCOSUD
+      - BCI
+      - BSANTANDER
+      - CAP
+      - CMPC
+      - LTM
+      - COLBUN
+      - ENELAM
+      - CCU
+    etfs:
+      - CFIETFIPSA
+      - CFINASDAQ
+
+mercado:
+  horario_inicio: "09:00"
+  horario_fin: "16:00"
+  timezone: "America/Santiago"
