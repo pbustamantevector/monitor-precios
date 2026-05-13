@@ -16,10 +16,17 @@ stocks:
       - NVDA
       - NBIS
       - AMD
+      - IREN
+      - RKLB
+      - MRLN
+      - IONQ
     etfs:
       - SPY
       - QQQ
       - IWM
+      - DRAM
+      - IWF
+      - SMH
   chile:
     acciones:
       - SQM-B
@@ -35,10 +42,8 @@ stocks:
       - COLBUN
       - ENELAM
       - CCU
-    etfs:
-      - CFIETFIPSA
-      - CFINASDAQ
-
+      - ANDINA-B
+      - AGUAS-A
 mercado:
   horario_inicio: "09:00"
   horario_fin: "16:00"
