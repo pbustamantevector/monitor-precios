@@ -81,7 +81,7 @@ def _emoji(cambio_pct: float) -> str:
 
 def _formatear_precio(precio: float, moneda: str, con_simbolo: bool = True) -> str:
     if moneda == "CLP":
-        fmt = f"{precio:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        fmt = f"{precio:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")  # "81.940,00"
         return f"${fmt}" if con_simbolo else fmt
     fmt = f"{precio:.2f}"
     return f"${fmt}" if con_simbolo else fmt
@@ -98,7 +98,7 @@ def _linea_wa(item: dict) -> str:
     )
 
 
-def crear_mensajes_whatsapp(precios: dict) -> list[str]:
+def crear_mensajes_telegram(precios: dict) -> list[str]:
     ts = datetime.now(ZoneInfo("America/Santiago")).strftime("%d/%m/%Y %H:%M")
     cabecera = f"📊 *Precios — {ts}*"
 
@@ -179,18 +179,18 @@ def crear_cuerpo_email(precios: dict) -> str:
     </body></html>"""
 
 
-def enviar_whatsapp(mensaje: str, phone: str, api_key: str) -> bool:
+def enviar_telegram(mensaje: str, chat_id: str, bot_token: str) -> bool:
     try:
         resp = requests.get(
-            "https://api.callmebot.com/whatsapp.php",
-            params={"phone": phone, "text": mensaje, "apikey": api_key},
+            f"https://api.telegram.org/bot{bot_token}/sendMessage",
+            params={"chat_id": chat_id, "text": mensaje, "parse_mode": "Markdown"},
             timeout=30,
         )
         resp.raise_for_status()
-        logging.info("WhatsApp enviado a %s", phone)
+        logging.info("Telegram enviado a chat_id=%s", chat_id)
         return True
     except Exception as exc:
-        logging.error("Error enviando WhatsApp: %s", exc)
+        logging.error("Error enviando Telegram: %s", exc)
         return False
 
 
@@ -228,14 +228,15 @@ def main():
 
     precios = recopilar_precios(cfg)
 
-    api_key = os.environ.get("CALLMEBOT_API_KEY", "")
-    if api_key:
-        mensajes = crear_mensajes_whatsapp(precios)
+    bot_token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
+    if bot_token and chat_id:
+        mensajes = crear_mensajes_telegram(precios)
         for i, mensaje in enumerate(mensajes, 1):
             logging.info("Mensaje %d/%d:\n%s", i, len(mensajes), mensaje)
-            enviar_whatsapp(mensaje, cfg["whatsapp"]["phone"], api_key)
+            enviar_telegram(mensaje, chat_id, bot_token)
     else:
-        logging.warning("CALLMEBOT_API_KEY no configurada — WhatsApp omitido")
+        logging.warning("TELEGRAM_BOT_TOKEN o TELEGRAM_CHAT_ID no configurados — Telegram omitido")
 
     if args.modo == "resumen-final":
         gmail_user = os.environ.get("GMAIL_USER", "")
