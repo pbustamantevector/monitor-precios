@@ -1,5 +1,5 @@
-whatsapp:
-  phone: "+56995959596"
+telegram:
+  chat_id: "6220568601"  # completar con tu chat ID (ver instrucciones en PLAN.md)
 
 email:
   to: "bustamante.pablo@uc.cl"
@@ -16,17 +16,10 @@ stocks:
       - NVDA
       - NBIS
       - AMD
-      - IREN
-      - RKLB
-      - MRLN
-      - IONQ
     etfs:
       - SPY
       - QQQ
       - IWM
-      - DRAM
-      - IWF
-      - SMH
   chile:
     acciones:
       - SQM-B
@@ -42,8 +35,10 @@ stocks:
       - COLBUN
       - ENELAM
       - CCU
-      - ANDINA-B
-      - AGUAS-A
+    etfs:
+      - CFIETFIPSA
+      - CFINASDAQ
+
 mercado:
   horario_inicio: "09:00"
   horario_fin: "16:00"
